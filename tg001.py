@@ -27,7 +27,7 @@ def response(function_call):
             botTimeWeb.send_message(function_call.message.chat.id, second_mess, reply_markup=markup)
             botTimeWeb.answer_callback_query(function_call.id)
         elif function_call.data == "no":
-            second_mess = "Пошёл отсюда тогда!"
+            second_mess = "Тогда пошёл отсюда негодяй!"
             botTimeWeb.send_message(function_call.message.chat.id, second_mess)
 
 
