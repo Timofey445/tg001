@@ -111,13 +111,16 @@ async def add_task(message: Message):
     task_name = parts[1]
     deadline = parts[2]
 
+    # Пробуем вывести полученные значения для анализа
+    await message.answer(f"Название задачи: {task_name}, Срок: {deadline}")
+
     try:
-        date_obj = datetime.strptime(deadline, "%dd.%mm.%YYYY").date()
+        date_obj = datetime.strptime(deadline, "%Y-%m-%d").date()
         cursor.execute("INSERT INTO tasks(task, deadline) VALUES (?, ?)", (task_name, str(date_obj)))
         conn.commit()
         await message.answer(f"Твоя задача \"{task_name}\" успешно добавлена на {deadline}.")
-    except ValueError:
-        await message.answer("Некорректная дата. Используйте формат ДД.ММ.ГГГГ")
+    except ValueError as e:
+        await message.answer(f"Некорректная дата: {e}. Используйте формат ГГГГ-ММ-ДД.")
 
 
 # Удаляем задачу по её идентификатору
