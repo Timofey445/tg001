@@ -1,53 +1,45 @@
-import telebot
+import logging
+from telegram.ext import Application, MessageHandler, filters
+from config import BOT_TOKEN
 
-botTimeWeb = telebot.TeleBot('7278832191:AAEf5wP3WvW9jEGUDaVwGMu1PhrTn1g1Zpc')
+# Запускаем логгирование
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG
+)
 
-from telebot import types
-
-
-@botTimeWeb.message_handler(commands=['start'])
-def startBot(message):
-    first_mess = (f"<b>{message.from_user.first_name}</b>, привет!"
-                  f"\nХочешь узнать что-то новое?")
-    markup = types.InlineKeyboardMarkup()
-    button_yes = types.InlineKeyboardButton(text = 'Да', callback_data='yes')
-    button_no = types.InlineKeyboardButton(text = 'Нет', callback_data='no')
-    button_idkn = types.InlineKeyboardButton(text = 'Я не знаю', callback_data='i dont know')
-    button_echo = types.InlineKeyboardButton(text = 'Эхо-бот', callback_data='echo-bot')
-    markup.add(button_yes, button_no, button_idkn, button_echo)
-    botTimeWeb.send_message(message.chat.id, first_mess, parse_mode='html', reply_markup=markup)
+logger = logging.getLogger(__name__)
 
 
-@botTimeWeb.callback_query_handler(func=lambda call:True)
-def response(function_call):
-    if function_call.message:
-        if function_call.data == "yes":
-            second_mess = "Тогда нажимай на кнопку!"
-            markup = types.InlineKeyboardMarkup()
-            markup.add(types.InlineKeyboardButton("Сюда",
-                                                  url="https://youtube.com/watch?v=6_hl8AB7Uf0"))
-            botTimeWeb.send_message(function_call.message.chat.id, second_mess, reply_markup=markup)
-            botTimeWeb.answer_callback_query(function_call.id)
-        elif function_call.data == "no":
-            second_mess = "Тогда пошёл отсюда!"
-            botTimeWeb.send_message(function_call.message.chat.id, second_mess)
-        elif function_call.data == "i dont know":
-            second_mess = "Тогда подумай и нажит на кнопку!"
-            botTimeWeb.send_message(function_call.message.chat.id, second_mess)
-        elif function_call.data == "echo-bot":
-            second_mess = "Тогда напиши мне что-нибудь!"
-            botTimeWeb.send_message(function_call.message.chat.id, second_mess)
-            botTimeWeb.register_next_step_handler(function_call.message, echo)
-
-def echo(message):
-    try:
-        mess = message.text
-        botTimeWeb.send_message(message.chat.id, mess)
-        botTimeWeb.register_next_step_handler(message, echo)
-    except:
-        botTimeWeb.send_message(message.chat.id, "Ты чего-то не понял!")
-        botTimeWeb.register_next_step_handler(message, echo)
+# Определяем функцию-обработчик сообщений.
+# У неё два параметра, updater, принявший сообщение и контекст - дополнительная информация о сообщении.
+async def echo(update, context):
+    # У объекта класса Updater есть поле message,
+    # являющееся объектом сообщения.
+    # У message есть поле text, содержащее текст полученного сообщения,
+    # а также метод reply_text(str),
+    # отсылающий ответ пользователю, от которого получено сообщение.
+    await update.message.reply_text(update.message.text)
 
 
+def main():
+    # Создаём объект Application.
+    # Вместо слова "TOKEN" надо разместить полученный от @BotFather токен
+    application = Application.builder().token('7879932904:AAEMNBlZ-M5cMSjuG5Wgg9jRm-ZESfjrfq0').build()
 
-botTimeWeb.infinity_polling()
+    # Создаём обработчик сообщений типа filters.TEXT
+    # из описанной выше асинхронной функции echo()
+    # После регистрации обработчика в приложении
+    # эта асинхронная функция будет вызываться при получении сообщения
+    # с типом "текст", т. е. текстовых сообщений.
+    text_handler = MessageHandler(filters.TEXT, echo)
+
+    # Регистрируем обработчик в приложении.
+    application.add_handler(text_handler)
+
+    # Запускаем приложение.
+    application.run_polling()
+
+
+# Запускаем функцию main() в случае запуска скрипта.
+if __name__ == '__main__':
+    main()

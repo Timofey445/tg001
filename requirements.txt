@@ -1,0 +1,7 @@
+aiogram==3.3.0
+sympy==1.12
+sqlite3>=3.39.0
+aiofiles==23.1.0
+asyncio>=3.4.3
+pyyaml>=6.0
+loguru>=0.7.2

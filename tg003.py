@@ -1,7 +1,3 @@
-# Универсальный Telegram-бот с двумя основными возможностями:
-# 1. Математика (решение уравнений и выражений)
-# 2. Организатор задач (добавление и удаление задач)
-
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram import Bot, Dispatcher, F, Router, types
 from aiogram.filters.command import CommandStart
@@ -12,7 +8,7 @@ import os
 import asyncio
 import sympy as sp
 
-# Инициализация базы данных SQLite
+
 conn = sqlite3.connect('tasks.db')
 cursor = conn.cursor()
 cursor.execute('''
@@ -24,14 +20,14 @@ CREATE TABLE IF NOT EXISTS tasks (
 ''')
 conn.commit()
 
-# Настройка API-токена Telegram
+
 API_TOKEN = '7879932904:AAEMNBlZ-M5cMSjuG5Wgg9jRm-ZESfjrfq0'
 
-# Создание объектов бота и роутеров
+
 bot = Bot(API_TOKEN)
 router = Router()
 
-# Главная команда /start
+
 @router.message(CommandStart())
 async def start_command(message: Message):
     buttons = [
@@ -46,7 +42,7 @@ async def start_command(message: Message):
                          "/tasklist — список задач",
                          reply_markup=keyboard)
 
-# Команда справки
+
 @router.message(F.text.lower() == '/help')
 async def help_command(message: Message):
     await message.answer("Доступные команды:\n"
@@ -55,7 +51,7 @@ async def help_command(message: Message):
                          "/add_task <текст задачи> — добавить новую задачу\n"
                          "/delete_task <id> — удалить задачу")
 
-# Решаем математические выражения
+
 @router.message(F.text.startswith('/math'))
 async def math_command(message: Message):
     expression = message.text.split(maxsplit=1)[1].strip() if len(message.text.split()) > 1 else None
@@ -66,7 +62,7 @@ async def math_command(message: Message):
     answer = f"Ваше выражение: {expression}\nРезультат: {result}"
     await message.answer(answer)
 
-# Работаем с задачами
+
 @router.message(F.text.in_(["/tasklist", "/add_task", "/delete_task"]))
 async def task_commands(message: Message):
     command = message.text.strip()
@@ -96,11 +92,11 @@ async def task_commands(message: Message):
         conn.commit()
         await message.answer(f"Задача №{args} удалена!")
 
-# Включаем обработку маршрутов
+
 dp = Dispatcher()
 dp.include_router(router)
 
-# Запуск бота
+
 if __name__ == '__main__':
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
