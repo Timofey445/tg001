@@ -109,7 +109,8 @@ async def start_command(message: Message):
     pass
 
     await message.answer("Привет! Я твой помощник.\n"
-                         "Используй кнопки ниже для навигации.",
+                         "Используй кнопки ниже для навигации.\n"
+                         "Используй команду /help, чтобы получить список доступных команд.",
                          reply_markup=keyboard)
 
 
