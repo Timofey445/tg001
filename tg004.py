@@ -87,7 +87,7 @@ bot = Bot(token=API_TOKEN)
 router = Router()
 
 
-audio_file_path = "./music/welcome.mp3"
+audio_file_path = "musics/welcome.mp3"
 
 
 @router.message(CommandStart())
